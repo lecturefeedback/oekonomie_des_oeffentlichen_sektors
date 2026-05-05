@@ -35,6 +35,12 @@
     margin-bottom: 20px;
   }
 
+  .subtext {
+    font-size: 16px;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+
   input {
     width: 100%;
     padding: 15px;
@@ -62,6 +68,68 @@
     font-weight: bold;
     cursor: pointer;
     width: 100%;
+  }
+
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-options button.active {
+    background: rgba(218, 102, 48, 0.85);
+    color: white;
+  }
+
+  .btn-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+  }
+
+.btn-wrapper button {
+  width: 100%;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 127%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(218, 102, 48, 0.85);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s;
+}
+
+.btn-wrapper:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.btn-wrapper button:disabled + .tooltip {
+  display: block;
+}
+
+.btn-wrapper button:not(:disabled) + .tooltip {
+  display: none;
+}
+
+  .btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  }
+
+  .btn-row button {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 14px;
   }
 
   .step {
@@ -125,26 +193,63 @@
 
     <!-- STEP 1 -->
     <div class="step active">
-      <h1>Wenn du eine Sache ändern könntest, was wäre es?</h1>
-      <textarea name="firstthing" rows="3" required></textarea>
-      <button type="button" onclick="next()">Weiter</button>
+      <h1>Wenn du EINE Sache ändern könntest, was wäre es?</h1>
+      <input name="firstthing" placeholder="Jetzt bist du dran..." required></input>
+      <div class="btn-wrapper">
+        <button type="button" id="nextBtn" onclick="next()" disabled>
+          Weiter
+        </button>
+        <span class="tooltip">wirklich nur EINE Sache, pls 👀</span>
+      </div>
     </div>
 
     <!-- STEP 2 -->
     <div class="step">
       <h1>Fällt dir noch was ein?</h1>
-      <input name="secondthing" />
-      <button type="button" class="back-btn" onclick="back()">Zurück</button>
-      <button type="submit">Absenden</button>
+      <input name="secondthing" placeholder="noch mehr Ideen? rein damit!"/>
+      <div class="btn-row">
+        <button type="button" class="back-btn" onclick="back()">Zurück</button>
+        <button type="button" onclick="next()">Weiter</button>
+      </div>
     </div>
 
-    <!-- STEP 3 THANK YOU -->
+    <!-- STEP 3 -->
+     <div class="step">
+      <h1>Wie oft warst du in der Vorlesung?</h1>
+      <input type="hidden" name="frequency" id="frequencyInput">
+
+      <div class="btn-options">
+        <button type="button">Fast immer</button>
+        <button type="button">Regelmäßig</button>
+        <button type="button">Mal so, mal so</button>
+        <button type="button">Selten</button>
+        <button type="button">Fast nie</button>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" onclick="back()">Zurück</button>
+        <button type="button" onclick="skip()">Keine Angabe</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <h1>Woran hat's gelegen? <span class="subtext">(fragt man sich immer)</span> </h1>
+      <input name="reason" />
+
+      <div class="btn-row">
+        <button type="button" onclick="back()">Zurück</button>
+        <button type="submit">Absenden</button>
+      </div>
+    </div>
+
+    <!-- STEP 5 THANK YOU -->
     <div class="step">
       <h1>Danke für dein Feedback! 🚀</h1>
 
       <div class="quote">
-        „Ein kleiner Augenblick für einen Menschen,<br>
-        aber ein großer für die Universität.“
+        Ein kleiner Augenblick für einen Menschen,<br>
+        aber ein großer für die Universität Innsbruck.
         
       <img class="thankyou-img"
            src="Astronaut.png"
@@ -161,6 +266,29 @@ let step = 0;
 const steps = document.querySelectorAll(".step");
 const bar = document.getElementById("bar");
 const form = document.getElementById("form");
+const input = document.querySelector('input[name="firstthing"]');
+const nextBtn = document.getElementById('nextBtn');
+const frequencyButtons = document.querySelectorAll(".btn-options button");
+const frequencyInput = document.getElementById("frequencyInput");
+
+frequencyButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+      frequencyInput.value = btn.innerText;
+      frequencyButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // automatisch weiter
+    next();
+  });
+});
+
+input.addEventListener('input', function () {
+  if (input.value.trim().length > 0) {
+    nextBtn.disabled = false;
+  } else {
+    nextBtn.disabled = true;
+  }
+});
 
 function updateBar() {
   bar.style.width = ((step) / (steps.length - 1)) * 100 + "%";
@@ -169,6 +297,13 @@ function updateBar() {
 function next() {
   steps[step].classList.remove("active");
   step++;
+  steps[step].classList.add("active");
+  updateBar();
+}
+
+function skip() {
+  steps[step].classList.remove("active");
+  step += 2;
   steps[step].classList.add("active");
   updateBar();
 }
