@@ -16,7 +16,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px;
   }
 
   .card {
@@ -30,6 +31,13 @@
     box-shadow: 0 20px 60px rgba(0,0,0,0.4);
   }
 
+  .form-header {
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  
   h1 {
     font-size: 26px;
     margin-bottom: 20px;
@@ -150,7 +158,7 @@
     height: 6px;
     background: rgba(255,255,255,0.1);
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     overflow: hidden;
   }
 
@@ -185,7 +193,8 @@
 
 <div class="card">
 
-  <div class="progress">
+  <div class="form-header">2026S404020 VO Ökonomie des öffentlichen Sektors</div> <!-- Titel der VO -->
+    <div class="progress">
     <div class="bar" id="bar"></div>
   </div>
 
@@ -193,7 +202,7 @@
 
     <!-- STEP 1 -->
     <div class="step active">
-      <h1>Wenn du EINE Sache ändern könntest, was wäre es?</h1>
+      <h1>Wenn du EINE Sache an der Vorlesung ändern könntest, was wäre es?</h1>
       <input name="firstthing" placeholder="Jetzt bist du dran..." required></input>
       <div class="btn-wrapper">
         <button type="button" id="nextBtn" onclick="next()" disabled>
@@ -238,6 +247,17 @@
       <input name="reason" />
 
       <div class="btn-row">
+        <button type="button" class="back-btn" onclick="back()">Zurück</button>
+        <button type="button" onclick="next()">Weiter</button>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <h1>Frage 5</h1>
+      <input name="reason" />
+
+      <div class="btn-row">
         <button type="button" onclick="back()">Zurück</button>
         <button type="submit">Absenden</button>
       </div>
@@ -273,12 +293,21 @@ const frequencyInput = document.getElementById("frequencyInput");
 
 frequencyButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-      frequencyInput.value = btn.innerText;
-      frequencyButtons.forEach(b => b.classList.remove("active"));
+
+    const value = btn.innerText;
+    frequencyInput.value = value;
+
+    // visuelle Auswahl
+    frequencyButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    // automatisch weiter
-    next();
+    // 👉 LOGIK: skip bei bestimmten Antworten
+    if (value === "Fast immer" || value === "Regelmäßig") {
+      skip(); // überspringt nächste Frage
+    } else {
+      next(); // normal weiter
+    }
+
   });
 });
 
