@@ -43,6 +43,11 @@
     margin-bottom: 20px;
   }
 
+  .highlight {
+    color: rgba(240, 111, 52, 0.85);
+    font-weight: 600;
+  }
+
   .subtext {
     font-size: 16px;
     opacity: 0.8;
@@ -98,10 +103,25 @@
   width: 100%;
 }
 
+.slider-container {
+  margin-top: 0px;
+}
+
+#frequencySlider {
+  width: 100%;
+}
+
+.slider-label {
+  margin-top: 8px;
+  font-size: 17px; /* gleiche Größe wie deine Inputs */
+  color: white;
+  text-align: left;
+}
+
 .tooltip {
   position: absolute;
-  bottom: 127%;
-  left: 50%;
+  bottom: 145%;
+  left: 52%;
   transform: translateX(-50%);
   background: rgba(218, 102, 48, 0.85);
   color: white;
@@ -115,30 +135,31 @@
   transition: 0.2s;
 }
 
-.btn-wrapper:hover .tooltip {
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  position: relative;
+}
+
+.btn-row button {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+/* Tooltip wenn Button disabled UND hover */
+.btn-row button:disabled:hover + .tooltip {
   opacity: 1;
   visibility: visible;
 }
 
-.btn-wrapper button:disabled + .tooltip {
-  display: block;
+/* Standard: versteckt */
+.tooltip {
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s;
 }
-
-.btn-wrapper button:not(:disabled) + .tooltip {
-  display: none;
-}
-
-  .btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  }
-
-  .btn-row button {
-  flex: 1;
-  padding: 10px 14px;
-  font-size: 14px;
-  }
 
   .step {
     display: none;
@@ -201,47 +222,21 @@
   <form id="form">
 
     <!-- STEP 1 -->
-    <div class="step active">
-      <h1>Wenn du EINE Sache an der Vorlesung ändern könntest, was wäre es?</h1>
-      <input name="firstthing" placeholder="Jetzt bist du dran..." required></input>
-      <div class="btn-wrapper">
-        <button type="button" id="nextBtn" onclick="next()" disabled>
-          Weiter
-        </button>
-        <span class="tooltip">wirklich nur EINE Sache, pls 👀</span>
-      </div>
-    </div>
-
-    <!-- STEP 2 -->
-    <div class="step">
-      <h1>Fällt dir noch was ein?</h1>
-      <input name="secondthing" placeholder="noch mehr Ideen? rein damit!"/>
-      <div class="btn-row">
-        <button type="button" class="back-btn" onclick="back()">Zurück</button>
-        <button type="button" onclick="next()">Weiter</button>
-      </div>
-    </div>
-
-    <!-- STEP 3 -->
-     <div class="step">
-      <h1>Wie oft warst du in der Vorlesung?</h1>
+     <div class="step active">
+      <h1>Wie häufig warst du in der Vorlesung?</h1>
       <input type="hidden" name="frequency" id="frequencyInput">
 
-      <div class="btn-options">
-        <button type="button">Fast immer</button>
-        <button type="button">Regelmäßig</button>
-        <button type="button">Mal so, mal so</button>
-        <button type="button">Selten</button>
-        <button type="button">Fast nie</button>
+      <div class="slider-container">
+        <input type="range" min="0" max="4" step="1" id="frequencySlider">
+        <div class="slider-label" id="sliderLabel">Mal so, mal so</div>
       </div>
 
-      <div class="btn-row">
-        <button type="button" onclick="back()">Zurück</button>
+      <div class="btn-wrapper">
         <button type="button" onclick="skip()">Keine Angabe</button>
       </div>
     </div>
 
-    <!-- STEP 4 -->
+    <!-- STEP 2 -->
     <div class="step">
       <h1>Woran hat's gelegen? <span class="subtext">(fragt man sich immer)</span> </h1>
       <input name="reason" />
@@ -251,8 +246,31 @@
         <button type="button" onclick="next()">Weiter</button>
       </div>
     </div>
+    
+    <!-- STEP 3 -->
+    <div class="step">
+      <h1> Wenn du <span class="highlight">eine Sache</span> an der Vorlesung ändern könntest, was wäre es?</h1>
+      <input name="firstthing" placeholder="Jetzt bist du dran..." required></input>
+      <div class="btn-row">
+        <button type="button" class="back-btn" onclick="back()">Zurück</button>
+        <button type="button" id="nextBtn" onclick="next()" disabled>
+          Weiter
+        </button>
+        <span class="tooltip">wirklich nur EINE Sache, pls 👀</span>
+      </div>
+    </div>
 
-    <!-- STEP 5 -->
+    <!-- STEP 4 -->
+    <div class="step">
+      <h1>Fällt dir noch was ein?</h1>
+      <input name="secondthing" placeholder="noch mehr Ideen? rein damit!"/>
+      <div class="btn-row">
+        <button type="button" class="back-btn" onclick="back()">Zurück</button>
+        <button type="button" onclick="next()">Weiter</button>
+      </div>
+    </div>
+
+        <!-- STEP 5 -->
     <div class="step">
       <h1>Frage 5</h1>
       <input name="reason" />
@@ -283,6 +301,7 @@
 
 <script>
 let step = 0;
+let skippedStep = false;
 const steps = document.querySelectorAll(".step");
 const bar = document.getElementById("bar");
 const form = document.getElementById("form");
@@ -290,6 +309,40 @@ const input = document.querySelector('input[name="firstthing"]');
 const nextBtn = document.getElementById('nextBtn');
 const frequencyButtons = document.querySelectorAll(".btn-options button");
 const frequencyInput = document.getElementById("frequencyInput");
+const slider = document.getElementById("frequencySlider");
+const sliderLabel = document.getElementById("sliderLabel");
+
+const values = [
+  "Fast nie",
+  "Selten",
+  "Mal so, mal so",
+  "Regelmäßig",
+  "Fast immer"
+];
+
+// initial setzen
+frequencyInput.value = values[slider.value];
+
+// bei Änderung
+slider.addEventListener("input", () => {
+  const value = values[slider.value];
+  sliderLabel.textContent = value;
+  frequencyInput.value = value;
+});
+
+//bei Loslassen automatisch weiter
+slider.addEventListener("change", () => {
+  const value = values[slider.value];
+
+  //skip bei bestimmten Antworten
+    if (value === "Fast immer" || value === "Regelmäßig") {
+      skippedStep = true;
+      skip();
+    } else {
+      skippedStep = false;
+      next();
+    }
+});
 
 frequencyButtons.forEach(btn => {
   btn.addEventListener("click", () => {
@@ -301,11 +354,13 @@ frequencyButtons.forEach(btn => {
     frequencyButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    // 👉 LOGIK: skip bei bestimmten Antworten
+    //skip bei bestimmten Antworten
     if (value === "Fast immer" || value === "Regelmäßig") {
-      skip(); // überspringt nächste Frage
+      skippedStep = true;
+      skip();
     } else {
-      next(); // normal weiter
+      skippedStep = false;
+      next();
     }
 
   });
@@ -339,7 +394,14 @@ function skip() {
 
 function back() {
   steps[step].classList.remove("active");
-  step--;
+
+  //skippedstep4 = true UND Frage 5
+  if (skippedStep && step === 2) {
+    step -= 2; //skip frage 3
+  } else {
+    step--;
+  }
+
   steps[step].classList.add("active");
   updateBar();
 }
