@@ -49,7 +49,7 @@
   }
 
   .subtext {
-    font-size: 16px;
+    font-size: 18px;
     opacity: 0.8;
     font-weight: 400;
   }
@@ -202,7 +202,7 @@
 }
 
   .quote {
-    margin-top: 15px;
+    margin-top: 5px;
     font-size: 16px;
     opacity: 0.9;
     line-height: 1.4;
@@ -239,7 +239,7 @@
     <!-- STEP 2 -->
     <div class="step">
       <h1>Woran hat's gelegen? <span class="subtext">(fragt man sich immer)</span> </h1>
-      <input name="reason" />
+      <input name="reason"  placeholder="Ich sag mal so..."/>
 
       <div class="btn-row">
         <button type="button" class="back-btn" onclick="back()">Zurück</button>
@@ -266,21 +266,11 @@
       <input name="secondthing" placeholder="noch mehr Ideen? rein damit!"/>
       <div class="btn-row">
         <button type="button" class="back-btn" onclick="back()">Zurück</button>
-        <button type="button" onclick="next()">Weiter</button>
-      </div>
-    </div>
-
-        <!-- STEP 5 -->
-    <div class="step">
-      <h1>Frage 5</h1>
-      <input name="reason" />
-
-      <div class="btn-row">
-        <button type="button" onclick="back()">Zurück</button>
         <button type="submit">Absenden</button>
       </div>
     </div>
 
+    
     <!-- STEP 5 THANK YOU -->
     <div class="step">
       <h1>Danke für dein Feedback! 🚀</h1>
@@ -288,10 +278,30 @@
       <div class="quote">
         Ein kleiner Augenblick für einen Menschen,<br>
         aber ein großer für die Universität Innsbruck.
-        
+      </div>
+
       <img class="thankyou-img"
-           src="Astronaut.png"
-           alt="Mondlandung Astronaut">
+          src="Astronaut.png"
+          alt="Mondlandung Astronaut">
+
+      <div class="quote">
+        Möchtest du die Ergebnisse per Mail bekommen?
+      </div>
+
+      <input type="email" name="email" placeholder="deine@email.at">
+
+      <div class="btn-row">
+        <button type="button">Nein danke</button>
+        <button type="button" onclick="submitMail()">Anonym anmelden</button>
+      </div>
+    </div>
+
+    <!-- STEP 6 Mail gespeichert -->
+    <div class="step">
+      <h1>Deine E-Mail wurde gespeichert!</h1>
+
+      <div class="quote">
+        Sobald die Umfrage abgeschlossen und die Ergebnisse ausgewertet sind, wirst du benachrichtigt.
       </div>
     </div>
 
@@ -302,6 +312,7 @@
 <script>
 let step = 0;
 let skippedStep = false;
+let sliderUsed = false;
 const steps = document.querySelectorAll(".step");
 const bar = document.getElementById("bar");
 const form = document.getElementById("form");
@@ -328,10 +339,12 @@ slider.addEventListener("input", () => {
   const value = values[slider.value];
   sliderLabel.textContent = value;
   frequencyInput.value = value;
+  sliderUsed = true
 });
 
 //bei Loslassen automatisch weiter
-slider.addEventListener("change", () => {
+slider.addEventListener("mouseup", () => {
+  if (!sliderUsed) return;
   const value = values[slider.value];
 
   //skip bei bestimmten Antworten
@@ -342,6 +355,7 @@ slider.addEventListener("change", () => {
       skippedStep = false;
       next();
     }
+  sliderUsed = false
 });
 
 frequencyButtons.forEach(btn => {
@@ -390,6 +404,8 @@ function skip() {
   step += 2;
   steps[step].classList.add("active");
   updateBar();
+  skippedStep = true;
+  frequencyInput.value = "Keine Angabe";
 }
 
 function back() {
@@ -405,6 +421,7 @@ function back() {
   steps[step].classList.add("active");
   updateBar();
 }
+
 
 form.addEventListener("submit", async function(e) {
   e.preventDefault();
@@ -423,6 +440,20 @@ form.addEventListener("submit", async function(e) {
 
   updateBar();
 });
+
+async function submitMail() {
+  const email = document.querySelector('input[name="email"]').value;
+
+  if (!email) return;
+
+  await fetch("https://formspree.io/f/mqenbwol", {
+    method: "POST",
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
+  });
+
+  next();
+}
 </script>
 </body>
 </html>
