@@ -619,19 +619,17 @@ function scrollToCard2() {
 }
 
 function scrollToCard() {
-  if (window.innerWidth <= 480) {
-    setTimeout(() => {
-      const card = document.querySelector('.card');
-      const cardTop = card.getBoundingClientRect().top + window.scrollY;
-      const cardHeight = card.offsetHeight;
-      const windowHeight = window.innerHeight;
-      
-      window.scrollTo({
-        top: cardTop - (windowHeight / 2) + (cardHeight / 2),
-        behavior: 'smooth'
-      });
-    }, 50); /* kurz warten bis der neue Step gerendert ist */
-  }
+  setTimeout(() => {
+    const card = document.querySelector('.card');
+    const cardTop = card.getBoundingClientRect().top + window.scrollY;
+    const cardHeight = card.offsetHeight;
+    const windowHeight = window.innerHeight;
+    
+    window.scrollTo({
+      top: cardTop - (windowHeight / 2) + (cardHeight / 2),
+      behavior: 'smooth'
+    });
+  }, 50);
 }
   
 form.addEventListener("submit", async function(e) {
