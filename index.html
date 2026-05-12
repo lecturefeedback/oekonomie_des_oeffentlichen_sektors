@@ -576,6 +576,7 @@ function next() {
   step++;
   steps[step].classList.add("active");
   updateBar();
+  scrollToCard()
 }
 
 function skip() {
@@ -583,6 +584,7 @@ function skip() {
   step += 2;
   steps[step].classList.add("active");
   updateBar();
+  scrollToCard()
   skippedStep = true;
 }
 
@@ -591,6 +593,7 @@ function setNoAnswer() {
   step += 2;
   steps[step].classList.add("active");
   updateBar();
+  scrollToCard()
   skippedStep = true;
   frequencyInput.value = "Keine Angabe"
 }
@@ -606,9 +609,15 @@ function back() {
 
   steps[step].classList.add("active");
   updateBar();
+  scrollToCard()
 }
 
-
+function scrollToCard() {
+  if (window.innerWidth <= 480) {
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+  
 form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
