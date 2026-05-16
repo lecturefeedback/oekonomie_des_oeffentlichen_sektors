@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Dein Feedback für Öko</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@200;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"> <!-- normale cards -->
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@200;400;600&display=swap" rel="stylesheet"> <!-- thank you card -->
 
 <style>
   body {
@@ -77,17 +77,46 @@
     box-sizing: border-box;
   }
   
-  button {
-    margin-top: 20px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 12px;
-    background: #38bdf8;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-  }
+button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #38bdf8;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.45);
+  color: white;
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
+
+.back-btn:hover {
+  background: #38bdf8;
+  border: 1px solid transparent;
+  color: black;
+}
+
+.no-answer-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.45);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.space-btn {
+  background: transparent;
+  flex: 1;
+  pointer-events: none;
+}
 
   button:disabled {
     opacity: 0.4;
@@ -118,15 +147,15 @@
 }
 
 .slider-label {
-  margin-top: 8px;
-  font-size: 17px; /* gleiche Größe wie deine Inputs */
-  color: white;
+  margin-top: 0px;
+  font-size: 16px; /* gleiche Größe wie deine Inputs */
+  color: rgb(228, 228, 228).45);
   text-align: left;
 }
 
 .tooltip {
   position: absolute;
-  bottom: 145%;
+  bottom: 190%;
   left: 52%;
   transform: translateX(-50%);
   background: rgba(218, 102, 48, 0.85);
@@ -135,7 +164,6 @@
   border-radius: 8px;
   font-size: 14px;
   white-space: nowrap;
-
   opacity: 0;
   visibility: hidden;
   transition: 0.2s;
@@ -154,10 +182,15 @@
   font-size: 14px;
 }
 
+.confirm-btn {
+  display: none;
+}
+
 /* Tooltip wenn Button disabled UND hover */
-.btn-row button:disabled:hover + .tooltip {
+.btn-wrapper button:disabled:hover + .tooltip {
   opacity: 1;
   visibility: visible;
+  animation: wiggle 0.22s ease-in-out 1;
 }
 
 /* Standard: versteckt */
@@ -246,11 +279,6 @@
   font-weight: 400;
   font-size: 18px;
   opacity: 0.8;
-}
-
-.mail-text {
-  margin-top: 40px;
-  font-weight: 200;
 }
 
 .thankyou-card input {
@@ -373,6 +401,39 @@
   .mobile-only {
     display: block;
   }
+
+  .space-btn {
+    display: none
+  }
+
+}
+
+@media (min-width: 481px) {
+  .confirm-btn {
+    display: block;
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {transform: translateX(-50%)}
+  20% {transform: translateX(calc(-50% - 2px))}
+  40% {transform: translateX(calc(-50% + 2px));}
+  60% {transform: translateX(calc(-50% - 1px));}
+  80% {transform: translateX(calc(-50% + 1px));}
+}
+
+textarea {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  margin-top: 10px;
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+  resize: none; /* kein manuelles Vergrößern */
+  min-height: 80px;
+  box-sizing: border-box;
 }
 
 </style>
@@ -389,8 +450,21 @@
 
   <form id="form">
 
-    <!-- STEP 1 -->
-     <div class="step active">
+    <!-- STEP 1 ONE THING -->
+    <div class="step active">
+      <h1> Wenn du <span class="highlight">eine Sache</span> an der Vorlesung ändern könntest, was wäre es?</h1>
+      <textarea name="firstthing" placeholder="Jetzt bist du dran..." required></textarea>
+      
+      <div class="btn-wrapper">
+        <button type="button" id="nextBtn" onclick="next()" disabled>
+          Weiter
+        </button>
+        <span class="tooltip">wirklich nur EINE Sache, pls 👀</span>
+      </div>
+    </div>
+    
+    <!-- STEP 2  SLIDER 1 -->
+    <div class="step">
       <h1>Wie häufig warst du in der Vorlesung?</h1>
       <input type="hidden" name="frequency" id="frequencyInput">
 
@@ -399,47 +473,55 @@
         <div class="slider-label" id="sliderLabel">Mal so, mal so</div>
       </div>
 
-      <div class="btn-wrapper">
-        <button type="button" onclick="setNoAnswer()">Keine Angabe</button>
+      <div class="btn-row">
+        <button type="button" class="back-btn" onclick="back()">Zurück</button>
+        <button type="button" class="no-answer-btn" onclick="setNoAnswer()">Keine Angabe</button>
+        <button type="button" class="confirm-btn" onclick="confirmSlider()">Weiter</button>
       </div>
     </div>
 
-    <!-- STEP 2 -->
+    <!-- STEP 3 CONDITIONAL -->
     <div class="step">
       <h1>Woran hat's gelegen? <br class="mobile-only"> <span class="subtext">(fragt man sich immer)</span> </h1>
       <input name="reason"  placeholder="Ich sag mal so..."/>
 
       <div class="btn-row">
         <button type="button" class="back-btn" onclick="back()">Zurück</button>
+        <div class="space-btn"></div>
         <button type="button" onclick="next()">Weiter</button>
       </div>
     </div>
     
-    <!-- STEP 3 -->
+    <!-- STEP 4 SLIDER 2 -->
     <div class="step">
-      <h1> Wenn du <span class="highlight">eine Sache</span> an der Vorlesung ändern könntest, was wäre es?</h1>
-      <input name="firstthing" placeholder="Jetzt bist du dran..." required></input>
+      <h1>Wie relevant fandest du die Inhalte?</h1>
+      <input type="hidden" name="relevance" id="relevanceInput">
+
+      <div class="slider-container">
+        <input type="range" min="0" max="4" step="1" id="relevanceSlider">
+        <div class="slider-label" id="sliderLabel2">Teils, teils</div>
+      </div>
+
       <div class="btn-row">
         <button type="button" class="back-btn" onclick="back()">Zurück</button>
-        <button type="button" id="nextBtn" onclick="next()" disabled>
-          Weiter
-        </button>
-        <span class="tooltip">wirklich nur EINE Sache, pls 👀</span>
+        <button type="button" class="no-answer-btn" onclick="setNoAnswer()">Keine Angabe</button>
+        <button type="button" class="confirm-btn" onclick="confirmSlider2()">Weiter</button>
       </div>
     </div>
 
-    <!-- STEP 4 -->
+    <!-- STEP 5 -->
     <div class="step">
       <h1>Fällt dir noch was ein?</h1>
       <input name="secondthing" placeholder="noch mehr Ideen? rein damit!"/>
       <div class="btn-row">
         <button type="button" class="back-btn" onclick="back()">Zurück</button>
-        <button type="submit">Absenden</button>
+        <div class="space-btn"></div>
+        <button type="submit">Absenden  ✓</button>
       </div>
     </div>
 
     
-    <!-- STEP 5 THANK YOU -->
+    <!-- STEP 6 THANK YOU -->
     <div class="step">
       <div class="thankyou-card">
         <div class="thankyou-overlay">
@@ -474,7 +556,7 @@
       </div>
     </div>
 
-    <!-- STEP 6 Mail gespeichert -->
+    <!-- STEP 7 Mail gespeichert -->
     <div class="step">
       <h1>Deine E-Mail wurde gespeichert!</h1>
 
@@ -494,15 +576,32 @@ let sliderUsed = false;
 const steps = document.querySelectorAll(".step");
 const bar = document.getElementById("bar");
 const form = document.getElementById("form");
-const input = document.querySelector('input[name="firstthing"]');
+const input = document.querySelector('[name="firstthing"]');
 const nextBtn = document.getElementById('nextBtn');
 const frequencyInput = document.getElementById("frequencyInput");
+const relevanceInput = document.getElementById("relevanceInput");
 const slider = document.getElementById("frequencySlider");
+const slider2 = document.getElementById("relevanceSlider");
 const sliderLabel = document.getElementById("sliderLabel");
+const sliderLabel2 = document.getElementById("sliderLabel2");
 const card = document.querySelector(".card");
 const SUPABASE_URL = "https://npfvurxupmvjhkiwkudc.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wZnZ1cnh1cG12amhraXdrdWRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTk5MzMsImV4cCI6MjA5Mzg5NTkzM30.-nRPsD7McszSQMkqtbW-ms8110BZGAj7Tdcs1a5Log4";
 
+const values = [
+  "Fast nie",
+  "Selten",
+  "Mal so, mal so",
+  "Regelmäßig",
+  "Fast immer"
+];
+const values2 = [
+  "Überhaupt nicht relevant",
+  "Wenig relevant",
+  "Teils, teils",
+  "Relevant",
+  "Sehr relevant"
+];
 
 async function submitSurvey(data) {
   const response = await fetch(
@@ -528,18 +627,10 @@ async function submitSurvey(data) {
   return response.ok;
 }
 
-const values = [
-  "Fast nie",
-  "Selten",
-  "Mal so, mal so",
-  "Regelmäßig",
-  "Fast immer"
-];
+//1. Slider
+sliderLabel.textContent = "Stammgast oder Gastauftritt?";
+frequencyInput.value = "";
 
-// initial setzen
-frequencyInput.value = values[slider.value];
-
-// bei Änderung
 slider.addEventListener("input", () => {
   const value = values[slider.value];
   sliderLabel.textContent = value;
@@ -547,21 +638,34 @@ slider.addEventListener("input", () => {
   sliderUsed = true
 });
 
-//bei Loslassen automatisch weiter
+//bei Loslassen am Handy automatisch weiter
 slider.addEventListener("change", () => {
   if (!sliderUsed) return;
-  const value = values[slider.value];
-
-  //skip bei bestimmten Antworten
+  if (window.matchMedia("(max-width: 480px)").matches) {
+    const value = values[slider.value];
     if (value === "Fast immer" || value === "Regelmäßig") {
       skippedStep = true;
+      form.reason.value = "";
       skip();
     } else {
       skippedStep = false;
       next();
     }
-  sliderUsed = false
+  }
+  sliderUsed = false;
 });
+
+function confirmSlider() {
+  const value = values[slider.value];
+  if (value === "Fast immer" || value === "Regelmäßig"|| value === "") {
+    skippedStep = true;
+    form.reason.value = "";
+    skip();
+  } else {
+    skippedStep = false;
+    next();
+  }
+}
 
 input.addEventListener('input', function () {
   if (input.value.trim().length > 0) {
@@ -570,6 +674,29 @@ input.addEventListener('input', function () {
     nextBtn.disabled = true;
   }
 });
+
+//2. Slider
+sliderLabel2.textContent = "Lebensverändernd oder Pflichtprogramm?";
+relevanceInput.value = ""
+
+slider2.addEventListener("input", () => {
+  const value = values2[slider2.value];
+  sliderLabel2.textContent = value;
+  relevanceInput.value = value;
+  sliderUsed = true
+});
+
+slider2.addEventListener("change", () => {
+  if (!sliderUsed) return;
+  if (window.matchMedia("(max-width: 480px)").matches) {
+    next();
+  }
+  sliderUsed = false;
+});
+
+function confirmSlider2() {
+  next();
+}
 
 function updateBar() {
   bar.style.width = ((step) / (steps.length - 2)) * 100 + "%";
@@ -597,21 +724,20 @@ function skip() {
 }
 
 function setNoAnswer() {
-  steps[step].classList.remove("active");
-  step += 2;
-  steps[step].classList.add("active");
-  updateBar();
-  if (window.matchMedia("(max-width: 480px)").matches) {
-    scrollToCard();
+  if (step === 1) {
+    skip()
+    frequencyInput.value = "Keine Angabe"
+    form.reason.value = "";
+  } else {
+    relevanceInput.value = "Keine Angabe"
+    next()
   }
-  skippedStep = true;
-  frequencyInput.value = "Keine Angabe"
 }
 
 function back() {
   steps[step].classList.remove("active");
 
-  if (skippedStep && step === 2) {
+  if (skippedStep && step === 3) {
     step -= 2; //skip frage 3
   } else {
     step--;
@@ -619,14 +745,9 @@ function back() {
 
   steps[step].classList.add("active");
   updateBar();
+  skippedStep = false;
   if (window.matchMedia("(max-width: 480px)").matches) {
     scrollToCard();
-  }
-}
-
-function scrollToCard2() {
-  if (window.innerWidth <= 480) {
-    document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
@@ -649,6 +770,7 @@ form.addEventListener("submit", async function(e) {
 
   const data = {
     frequency: frequencyInput.value,
+    relevance: relevanceInput.value,
     reason: form.reason.value,
     firstthing: form.firstthing.value,
     secondthing: form.secondthing.value
@@ -658,7 +780,6 @@ form.addEventListener("submit", async function(e) {
 
   if(success){
     next();
-    updateBar();
   } else {
     alert("Fehler beim Speichern.");
   }
