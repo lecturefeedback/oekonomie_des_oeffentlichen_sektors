@@ -646,7 +646,7 @@ slider.addEventListener("input", () => {
 });
 
 //bei Loslassen am Handy automatisch weiter
-slider.addEventListener("change", () => {
+slider.addEventListener("touched", () => {
   if (!sliderUsed) return;
   if (window.matchMedia("(max-width: 480px)").matches) {
     const value = values[slider.value];
@@ -693,7 +693,7 @@ slider2.addEventListener("input", () => {
   sliderUsed = true
 });
 
-slider2.addEventListener("change", () => {
+slider2.addEventListener("touched", () => {
   if (!sliderUsed) return;
   if (window.matchMedia("(max-width: 480px)").matches) {
     next();
