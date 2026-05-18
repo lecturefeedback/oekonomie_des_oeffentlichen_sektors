@@ -484,7 +484,7 @@ textarea {
 
     <!-- STEP 3 CONDITIONAL -->
     <div class="step">
-      <h1>Woran hat's gelegen? <br class="mobile-only"> <span class="subtext">(fragt man sich immer)</span> </h1>
+      <h1>Woran hat's gelegen? <br class="mobile-only"> <span class="subtext">(fragt man sich )</span> </h1>
       <input name="reason"  placeholder="Ich sag mal so..."/>
 
       <div class="btn-row">
@@ -651,7 +651,7 @@ slider.addEventListener("touchend", () => {
   if (window.matchMedia("(max-width: 480px)").matches) {
     setTimeout(() => {
       const value = values[slider.value];
-      if (value === "Fast immer" || value === "Regelmäßig") {
+      if (value === "Immer" || value === "Häufig") {
         skippedStep = true;
         form.reason.value = "";
         skip();
