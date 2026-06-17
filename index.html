@@ -602,7 +602,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const urlParams = new URLSearchParams(window.location.search);
 let gruppe = urlParams.get("gruppe");
 if (!["1", "2", "3", "4"].includes(gruppe)) {
-  gruppe = "1";
+  gruppe = "0";
 }
 const GROUP_NUMBER = Number(gruppe);
 const RESPONSES_TABLE = "ResponsesOeko";
