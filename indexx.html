@@ -595,7 +595,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // === GRUPPEN-LOGIK ===
 // Welche Gruppe geantwortet hat, wird über den URL-Parameter ?gruppe=1|2|3|4 gesteuert
-// und in der Spalte "group" mitgespeichert. Eine einzige Tabelle für alle Gruppen.
+// und in der Spalte "group_id" mitgespeichert. Eine einzige Tabelle für alle Gruppen.
 // Beispiel-Links zum Verschicken:
 //   .../?gruppe=1   .../?gruppe=2   .../?gruppe=3   .../?gruppe=4
 // Wenn kein gültiger Parameter übergeben wird, fällt es auf Gruppe 1 zurück.
@@ -798,7 +798,7 @@ form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const data = {
-    group: GROUP_NUMBER,
+    group_id: GROUP_NUMBER,
     frequency: frequencyInput.value,
     relevance: relevanceInput.value,
     reason: form.reason.value,
@@ -830,7 +830,7 @@ async function submitMail() {
         "Authorization": `Bearer ${SUPABASE_KEY}`,
         "Prefer": "return=minimal"
       },
-      body: JSON.stringify({ email, group: GROUP_NUMBER })
+      body: JSON.stringify({ email, group_id: GROUP_NUMBER })
     }
   );
 
